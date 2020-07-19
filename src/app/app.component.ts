@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
+import { interval, Subscription, Observable } from 'rxjs';
+import { filter, map, skip } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -8,71 +9,82 @@ import { interval, Subscription } from 'rxjs';
 })
 export class AppComponent {
   timer: Timer;
-  interv: Subscription;
-  
+  sub: Subscription;
+
   constructor() {
-    this.resetTimer();
+    this.timer = new Timer();
   }
 
   /**
    * Toggles timer
    */
   toggleTimer() {
-    if (this.timer.isStarted)
-      this.resetTimer();
+    if (this.timer.isStarted && !this.timer.isPaused) 
+      this.restartTimer();
     else
       this.startTimer();
   }
 
   startTimer() {
-    this.timer = Object.assign(new Timer(), {isStarted: true});
-    this.interv = interval(1000).subscribe(() => this.timer.seconds++);
+    this.timer = Object.assign(this.timer, { isStarted: true, isPaused: false });
+
+    this.sub = interval(1000)
+      .subscribe(() => {
+        const seconds = this.timer.seconds + 1;
+        const isOverSeconds = seconds == 60;
+        const minutes = this.timer.minutes + +isOverSeconds;
+        const isOverMinutes = minutes == 60;
+
+        this.timer = Object.assign(this.timer, {
+          hours: this.timer.hours + +isOverMinutes,
+          minutes: minutes % 60,
+          seconds: seconds % 60
+        });
+      });
   }
 
-  resetTimer() {
-    this.interv?.unsubscribe();
+  restartTimer() {
+    this.sub?.unsubscribe();
     this.timer = new Timer();
   }
 
-  toggleTimerPause() {
-    this.timer = Object.assign(new Timer(), {isPaused: !this.timer.isPaused});
-    //.isPaused = !this.timer.isPaused;
+  resetTimer() {
+    this.restartTimer();
+    this.startTimer();
+  }
+
+  toggleResetTimer() {
+    this.timer = Object.assign(this.timer, { isPaused: !this.timer.isPaused });
+    this.sub?.unsubscribe();
   }
 
   /**
    * Returns text that shows in main button
    */
   get buttonText() {
-    return this.timer.isStarted ? (this.timer.isPaused ? "Resume" : "Stop" ) : "Start";
+    return this.timer.isStarted ? (this.timer.isPaused ? "Resume" : "Stop") : "Start";
   }
 
-  get days() {
-    return this.timer.days;
-  }
-  
   get hours() {
     return this.timer.hours;
   }
-  
+
   get minutes() {
     return this.timer.minutes;
   }
-  
+
   get seconds() {
     return this.timer.seconds;
   }
 }
 
-
-
 class Timer {
   seconds: number = 0;
   minutes: number = 0;
   hours: number = 0;
-  days: number = 0;
   isStarted: boolean = false; // Is timer started
   isPaused: boolean = false; // Is timer paused
-  
+
   /**
    *
    */

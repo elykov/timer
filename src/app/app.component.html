@@ -1,19 +1,18 @@
 <div class="timer">
     <div class="">
-        <h2 *ngIf="days > 0"></h2>
         <h1 class="text-center">
             {{hours | number:'2.0'}}:{{minutes | number:'2.0'}}:{{seconds | number:'2.0'}}
         </h1>
     </div>
     <div class="buttons container row">
-        <div class="col-sm-12 col-md-4">
+        <div class="col-sm-12 col-md-4 d-flex justify-content-center">
             <button class="btn" [ngClass]="timer.isStarted ? 'btn-danger' : 'btn-success'"  (click)="toggleTimer()">{{buttonText}}</button>
         </div>
-        <div class="col-sm-12 col-md-4">
-            <button class="btn btn-warning">Wait</button>
+        <div class="col-sm-12 col-md-4 d-flex justify-content-center">
+            <button class="btn btn-warning" (click)="toggleResetTimer()">Wait</button>
         </div>
-        <div class="col-sm-12 col-md-4">
-            <button class="btn btn-secondary">Reset</button>
+        <div class="col-sm-12 col-md-4 d-flex justify-content-center">
+            <button class="btn btn-secondary" (click)="resetTimer()">Reset</button>
         </div>
     </div>
 </div>
