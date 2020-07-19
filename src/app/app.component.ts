@@ -19,7 +19,7 @@ export class AppComponent {
    * Toggles timer
    */
   toggleTimer() {
-    if (this.timer.isStarted && !this.timer.isPaused) 
+    if (this.timer.isStarted && !this.timer.isPaused)
       this.restartTimer();
     else
       this.startTimer();
@@ -53,8 +53,20 @@ export class AppComponent {
     this.startTimer();
   }
 
-  toggleResetTimer() {
-    this.timer = Object.assign(this.timer, { isPaused: !this.timer.isPaused });
+  isClicked: boolean = false;
+  doubleClick() {
+    if (!this.isClicked) {
+      this.isClicked = true;
+      setTimeout(() => {
+        this.isClicked = false;
+      }, 300);
+    }
+    else
+      this.pauseTimer();
+  }
+
+  pauseTimer() {
+    this.timer = Object.assign(this.timer, { isPaused: true });
     this.sub?.unsubscribe();
   }
 
