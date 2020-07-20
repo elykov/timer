@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { interval, Subscription, Observable } from 'rxjs';
-import { filter, map, skip } from 'rxjs/operators';
+import { Component, ViewChild, ElementRef } from '@angular/core';
+import { interval, Subscription, Observable, fromEvent, Subject } from 'rxjs';
+import { filter, map, skip, switchMap, debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +14,29 @@ export class AppComponent {
   constructor() {
     this.timer = new Timer();
   }
+
+  ngOnInit() {
+    const bs = new Subject<any>();
+    bs.pipe(
+      debounceTime(300)
+    ).subscribe(() => this.isClicked = false);
+       
+    fromEvent(this.waitButton.nativeElement, 'click')
+      .subscribe(() => {
+        if (!this.isClicked) {
+          this.isClicked = true;
+          bs.next();
+        }
+        else
+          this.pauseTimer();
+      });
+  }
+
+  @ViewChild('waitButton', { static: true })
+  private waitButton: ElementRef;
+
+  isClicked: boolean = false;
+  
 
   /**
    * Toggles timer
@@ -51,18 +74,6 @@ export class AppComponent {
   resetTimer() {
     this.restartTimer();
     this.startTimer();
-  }
-
-  isClicked: boolean = false;
-  doubleClick() {
-    if (!this.isClicked) {
-      this.isClicked = true;
-      setTimeout(() => {
-        this.isClicked = false;
-      }, 300);
-    }
-    else
-      this.pauseTimer();
   }
 
   pauseTimer() {

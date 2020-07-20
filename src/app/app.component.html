@@ -4,12 +4,13 @@
             {{hours | number:'2.0'}}:{{minutes | number:'2.0'}}:{{seconds | number:'2.0'}}
         </h1>
     </div>
-    <div class="buttons container row">
+    <div class="buttons container-fluid row">
         <div class="col-sm-12 col-md-4 d-flex justify-content-center">
             <button class="btn" [ngClass]="timer.isStarted ? 'btn-danger' : 'btn-success'"  (click)="toggleTimer()">{{buttonText}}</button>
         </div>
         <div class="col-sm-12 col-md-4 d-flex justify-content-center">
-            <button class="btn btn-warning" (click)="doubleClick()">Wait</button>
+            <button #waitButton class="btn btn-warning">Wait</button> 
+            <!-- (click)="doubleClick()" -->
         </div>
         <div class="col-sm-12 col-md-4 d-flex justify-content-center">
             <button class="btn btn-secondary" (click)="resetTimer()">Reset</button>
